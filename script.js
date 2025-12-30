@@ -1,4 +1,3 @@
-
 let currentQuizIndex = 0;
 let score = 0;
 let quizSet = [];
@@ -17,9 +16,9 @@ const charIdColors = {
   '07': '#4e3076',
   '08': '#ff9500',
   '09': '#820000',
-  '11': '#8b9c15',
-  '12': '#325339',
-  '13': '#69350b'
+  11: '#8b9c15',
+  12: '#325339',
+  13: '#69350b'
 };
 
 let choiceMode = 'all';
@@ -73,7 +72,7 @@ function startCheckMode() {
   currentQuizIndex = 0;
 
   // --- 追加：データ確認モードの画像も先読み（最初の数件だけでもOKですが、ここでは全体） ---
-  preloadQuizImages(quizSet.slice(0, 10)); // とりあえず最初の10件を先読み
+  preloadQuizImages(quizSet); // とりあえず最初の10件を先読み
 
   setupOrgMenu();
   showQuestion();
@@ -104,12 +103,12 @@ function backToTitle() {
 
 function preloadQuizImages(set) {
   set.forEach((item) => {
-    // クイズモードの場合 (item自体にfileNameがある)
+    // クイズモード（1問ずつバラのデータ）の場合
     if (item.fileName) {
       const img = new Image();
       img.src = `skill/${item.fileName}`;
     }
-    // 確認モードの場合 (item.skillsの中に複数の画像がある)
+    // 確認モード（人格データごと）の場合
     else if (item.skills) {
       item.skills.forEach((s) => {
         const img = new Image();
