@@ -216,8 +216,41 @@ function showQuestion() {
   const skillText = document.getElementById('skill-text'); // 追加
 
   if (currentDifficulty === 'check') {
-    // (データ確認モードの処理はそのまま)
-    // ...
+    standardArea.classList.add('hidden');
+
+    checkArea.classList.remove('hidden');
+
+    choicesArea.innerHTML = '';
+
+    qNum.innerText = `人格確認: ${currentQuizIndex + 1} / ${quizSet.length}`;
+
+    let skillsHtml = `<div class="check-grid">`;
+
+    current.skills.forEach((s) => {
+      skillsHtml += `<div class="check-item"><img src="skill/${s.file}" alt=""><p class="check-skill-name">${s.name}</p></div>`;
+    });
+
+    skillsHtml += `</div>`;
+
+    checkArea.innerHTML = `
+
+      ${skillsHtml}
+
+      <div class="check-footer">
+
+        <p class="answer-label" style="font-size:0.8em; color:#888;">正解の人格</p>
+
+        <p class="answer-name">${current.name}</p>
+
+        <div class="check-controls">
+
+          <button class="btn-prev-check" onclick="prevCheck()">← 前へ</button>
+
+          <button class="btn-next-check" onclick="nextCheck()">次へ →</button>
+
+        </div>
+
+      </div>`;
   } else {
     standardArea.classList.remove('hidden');
     checkArea.classList.add('hidden');
@@ -338,9 +371,7 @@ function checkAnswer(clickedBtn, selected, correct) {
   if (isCorrect) score++;
 
   gameLog.push({
-    // リザルト画面で「何が問題だったか」を表示するため、
-    // 問題自体が「スキル名当て」か「人格名当て」かで表示を切り分ける
-    displayQuestion: currentDifficulty === 'veryhard' ? '画像から推測' : quizSet[currentQuizIndex].skillName,
+    skill: currentDifficulty === 'veryhard' ? '画像から推測' : quizSet[currentQuizIndex].skillName,
     correct: correct,
     selected: selected || '(未入力)',
     isCorrect: isCorrect
@@ -386,7 +417,7 @@ function showResult() {
 
     hard: { label: 'Hard', color: '#f44336' },
 
-    lunatic: { label: '記述式', color: '#ba68c8' }
+    veryhard: { label: 'Very Hard', color: '#ba68c8' }
   };
 
   const setting = diffSet[currentDifficulty] || { label: 'Unknown', color: '#fff' };
