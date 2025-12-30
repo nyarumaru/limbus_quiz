@@ -33,7 +33,7 @@ function toggleChoiceMode() {
     btn.innerText = '選択肢：全ランダム';
   } else {
     choiceMode = 'sin';
-    btn.innerText = '選択肢：罪悪属性優先';
+    btn.innerText = '選択肢：属性優先';
   }
   // 全モード共通の色
   btn.style.color = '#888';
