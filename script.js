@@ -251,7 +251,23 @@ function showResult() {
   document.getElementById('quiz-screen').classList.add('hidden');
   document.getElementById('back-to-title-btn').classList.add('hidden');
   document.getElementById('result-screen').classList.remove('hidden');
-  document.getElementById('score-text').innerText = `${TOTAL_QUESTIONS}問中 ${score}問正解！`;
+
+  // --- 難易度ごとの表示名と色の設定 ---
+  const diffSettings = {
+    easy: { label: 'Easy', color: '#4caf50' },
+    normal: { label: 'Normal', color: '#2196f3' },
+    hard: { label: 'Hard', color: '#f44336' }
+  };
+
+  const setting = diffSettings[currentDifficulty] || { label: 'Unknown', color: '#ffffff' };
+
+  // innerHTMLを使って、難易度の部分だけスパンで囲って色をつけます
+  document.getElementById('score-text').innerHTML = `
+    <div style="margin-bottom: 10px;">
+      難易度: <span style="color: ${setting.color}; font-weight: bold; font-size: 1.2em;">${setting.label}</span>
+    </div>
+    <div>${TOTAL_QUESTIONS}問中 ${score}問正解！</div>
+  `;
 
   const reviewArea = document.getElementById('review-area');
   reviewArea.innerHTML = '';
@@ -259,7 +275,7 @@ function showResult() {
   gameLog.forEach((log, i) => {
     const card = document.createElement('div');
     card.className = 'review-card';
-    card.style.borderLeft = log.isCorrect ? '5px solid #2e7d32' : '5px solid #c62828';
+    card.style.borderLeft = log.isCorrect ? `5px solid #2e7d32` : `5px solid #c62828`;
 
     card.innerHTML = `
       <div style="font-size:0.9em; color:#ffd700; margin-bottom:5px;">
