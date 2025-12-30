@@ -21,17 +21,22 @@ const charIdColors = {
   13: '#69350b'
 };
 
-let choiceMode = 'all';
+// デフォルトを 'sin' に設定
+let choiceMode = 'sin';
 
 function toggleChoiceMode() {
   const btn = document.getElementById('mode-toggle-btn');
-  if (choiceMode === 'all') {
+  if (choiceMode === 'sin') {
     choiceMode = 'org';
     btn.innerText = '選択肢：所属優先';
-    btn.style.color = '#ff4444';
-  } else {
+    btn.style.color = '#888';
+  } else if (choiceMode === 'org') {
     choiceMode = 'all';
     btn.innerText = '選択肢：全ランダム';
+    btn.style.color = '#888';
+  } else {
+    choiceMode = 'sin';
+    btn.innerText = '選択肢：属性優先';
     btn.style.color = '#888';
   }
 }
@@ -60,7 +65,6 @@ function toggleOrgMenu() {
   document.getElementById('org-menu-overlay').classList.toggle('hidden');
 }
 
-// 確認モード開始時も先読みする
 function startCheckMode() {
   currentDifficulty = 'check';
   document.getElementById('title-screen').classList.add('hidden');
@@ -68,11 +72,9 @@ function startCheckMode() {
   document.getElementById('back-to-title-btn').classList.remove('hidden');
   document.getElementById('org-jump-btn').classList.remove('hidden');
 
-  quizSet = charData; // 全人格データ
+  quizSet = charData;
   currentQuizIndex = 0;
-
-  // --- 追加：データ確認モードの画像も先読み（最初の数件だけでもOKですが、ここでは全体） ---
-  preloadQuizImages(quizSet); // とりあえず最初の10件を先読み
+  preloadQuizImages(quizSet);
 
   setupOrgMenu();
   showQuestion();
@@ -103,13 +105,10 @@ function backToTitle() {
 
 function preloadQuizImages(set) {
   set.forEach((item) => {
-    // クイズモード（1問ずつバラのデータ）の場合
     if (item.fileName) {
       const img = new Image();
       img.src = `skill/${item.fileName}`;
-    }
-    // 確認モード（人格データごと）の場合
-    else if (item.skills) {
+    } else if (item.skills) {
       item.skills.forEach((s) => {
         const img = new Image();
         img.src = `skill/${s.file}`;
@@ -122,7 +121,12 @@ function initGame() {
   let allSkills = [];
   charData.forEach((char) => {
     char.skills.forEach((skill) => {
-      allSkills.push({ charObj: char, skillName: skill.name, fileName: skill.file });
+      allSkills.push({
+        charObj: char,
+        skillName: skill.name,
+        fileName: skill.file,
+        sin: skill.sin // sin情報を追加
+      });
     });
   });
   quizSet = allSkills.sort(() => Math.random() - 0.5).slice(0, TOTAL_QUESTIONS);
@@ -180,15 +184,32 @@ function showQuestion() {
     if (currentDifficulty === 'easy') document.getElementById('skill-text').classList.remove('invisible');
     else document.getElementById('skill-text').classList.add('invisible');
 
-    generateChoices(current.charObj);
+    generateChoices(current);
   }
 }
 
-function generateChoices(correctChar) {
+function generateChoices(currentQuestion) {
+  const correctChar = currentQuestion.charObj;
+  const currentSin = currentQuestion.sin;
   const choicesArea = document.getElementById('choices-area');
   choicesArea.innerHTML = '';
+
   let wrongChoices = [];
-  if (choiceMode === 'org') {
+
+  if (choiceMode === 'sin') {
+    // 属性優先：この問題のスキルと同じsin（色）をどこかに持っている他のキャラ
+    let sameSinChars = charData.filter(
+      (c) => c.name !== correctChar.name && c.skills.some((s) => s.sin === currentSin)
+    );
+    let diffSinChars = charData.filter(
+      (c) => c.name !== correctChar.name && !c.skills.some((s) => s.sin === currentSin)
+    );
+    wrongChoices = [
+      ...sameSinChars.sort(() => Math.random() - 0.5),
+      ...diffSinChars.sort(() => Math.random() - 0.5)
+    ].slice(0, 3);
+  } else if (choiceMode === 'org') {
+    // 所属優先
     let sameOrgChars = charData.filter((c) => c.org === correctChar.org && c.name !== correctChar.name);
     let diffOrgChars = charData.filter((c) => c.org !== correctChar.org && c.name !== correctChar.name);
     wrongChoices = [
@@ -196,6 +217,7 @@ function generateChoices(correctChar) {
       ...diffOrgChars.sort(() => Math.random() - 0.5)
     ].slice(0, 3);
   } else {
+    // 全ランダム
     wrongChoices = charData
       .filter((c) => c.name !== correctChar.name)
       .sort(() => Math.random() - 0.5)
@@ -252,7 +274,6 @@ function showResult() {
   document.getElementById('back-to-title-btn').classList.add('hidden');
   document.getElementById('result-screen').classList.remove('hidden');
 
-  // --- 難易度ごとの表示名と色の設定 ---
   const diffSettings = {
     easy: { label: 'Easy', color: '#4caf50' },
     normal: { label: 'Normal', color: '#2196f3' },
@@ -261,7 +282,6 @@ function showResult() {
 
   const setting = diffSettings[currentDifficulty] || { label: 'Unknown', color: '#ffffff' };
 
-  // innerHTMLを使って、難易度の部分だけスパンで囲って色をつけます
   document.getElementById('score-text').innerHTML = `
     <div style="margin-bottom: 10px;">
       難易度: <span style="color: ${setting.color}; font-weight: bold; font-size: 1.2em;">${setting.label}</span>
