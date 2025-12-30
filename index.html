@@ -1,47 +1,61 @@
 <!DOCTYPE html>
+
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
+
     <title>LimbusCompanyスキルクイズ</title>
+
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
     <div id="game-container">
       <button id="back-to-title-btn" class="back-btn hidden" onclick="backToTitle()">タイトルへ</button>
 
-      <div id="org-menu-overlay" class="hidden" onclick="toggleOrgMenu()">
-        <div id="org-menu-content" onclick="event.stopPropagation()">
-          <h3>所属を選択</h3>
-          <div id="org-list"></div>
-          <button class="close-org-btn" onclick="toggleOrgMenu()">閉じる</button>
-        </div>
-      </div>
-
       <div id="title-screen">
         <h1>LimbusCompany<br />スキルクイズ</h1>
+
         <div class="difficulty-menu">
           <button class="btn-easy" onclick="startGame('easy')">Easy</button>
+
           <button class="btn-normal" onclick="startGame('normal')">Normal</button>
+
           <button class="btn-hard" onclick="startGame('hard')">Hard</button>
+
+          <button class="btn-lunatic" onclick="startGame('veryhard')">Very Hard</button>
         </div>
 
         <div id="debug-menu">
-          <button id="mode-toggle-btn" onclick="toggleChoiceMode()" style="color: #888">選択肢：属性優先</button>
+          <button id="mode-toggle-btn" onclick="toggleChoiceMode()">選択肢：属性優先</button>
+
           <button id="check-mode-btn" onclick="startCheckMode()">データ確認モード</button>
         </div>
       </div>
 
       <div id="quiz-screen" class="hidden">
-        <button id="org-jump-btn" class="hidden" onclick="toggleOrgMenu()">所属から選ぶ</button>
         <div id="quiz-header">
-          <p id="question-number">第 1 問 / 全 5 問</p>
+          <p id="question-number">第 1 問 / 全 6 問</p>
+
+          <button id="org-jump-btn" class="hidden" onclick="toggleOrgMenu()">所属から選ぶ</button>
         </div>
 
         <div id="quiz-standard-area">
           <p id="skill-text">スキル名：<span id="skill-name">???</span></p>
-          <div id="image-area">
-            <img id="skill-image" src="" alt="スキルアイコン" />
+
+          <div id="image-area-container">
+            <div id="image-area">
+              <img id="skill-image" src="" alt="スキルアイコン" />
+
+              <div id="skill-mask" class="hidden"></div>
+            </div>
           </div>
+        </div>
+
+        <div id="input-area" class="hidden">
+          <input type="text" id="answer-input" placeholder="人格名をフルネームで入力" />
+
+          <button id="answer-submit-btn" onclick="checkTextAnswer()">回答する</button>
         </div>
 
         <div id="check-mode-area" class="hidden"></div>
@@ -51,33 +65,35 @@
 
       <div id="result-screen" class="hidden">
         <h2>リザルト</h2>
+
         <p id="score-text"></p>
+
         <div id="review-area"></div>
-        <button
-          onclick="location.reload()"
-          style="
-            margin-top: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #ffd700;
-            color: #000;
-            border: none;
-            font-weight: bold;
-          "
-        >
-          タイトルへ戻る
-        </button>
+
+        <button class="result-back-btn" onclick="location.reload()">タイトルへ戻る</button>
+      </div>
+
+      <div id="org-menu-overlay" class="hidden" onclick="toggleOrgMenu()">
+        <div id="org-menu-content" onclick="event.stopPropagation()">
+          <h3>所属を選択</h3>
+
+          <div id="org-list"></div>
+
+          <button class="close-org-btn" onclick="toggleOrgMenu()">閉じる</button>
+        </div>
       </div>
     </div>
+
     <div id="footer-info">
       <p>当サイトはProjectMoon制作「Limbus Company」の非公式二次創作作品です。</p>
-      <p>問題制作の都合上、一部人格の所属を統合・整理して表記しています。</p>
-      <p>使用している画像は、ゲーム画面のスクリーンショットから切り抜いたものです。</p>
+
       <p>使用している画像および知的財産権はすべてProjectMoonに帰属します。</p>
+
       <p>© ProjectMoon</p>
     </div>
 
     <script src="data.js"></script>
+
     <script src="script.js"></script>
   </body>
 </html>
