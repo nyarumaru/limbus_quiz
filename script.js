@@ -60,6 +60,7 @@ function toggleOrgMenu() {
   document.getElementById('org-menu-overlay').classList.toggle('hidden');
 }
 
+// 確認モード開始時も先読みする
 function startCheckMode() {
   currentDifficulty = 'check';
   document.getElementById('title-screen').classList.add('hidden');
@@ -67,8 +68,12 @@ function startCheckMode() {
   document.getElementById('back-to-title-btn').classList.remove('hidden');
   document.getElementById('org-jump-btn').classList.remove('hidden');
 
-  quizSet = charData;
+  quizSet = charData; // 全人格データ
   currentQuizIndex = 0;
+
+  // --- 追加：データ確認モードの画像も先読み（最初の数件だけでもOKですが、ここでは全体） ---
+  preloadQuizImages(quizSet.slice(0, 10)); // とりあえず最初の10件を先読み
+
   setupOrgMenu();
   showQuestion();
 }
@@ -96,6 +101,15 @@ function backToTitle() {
   location.reload();
 }
 
+function preloadQuizImages(set) {
+  set.forEach((item) => {
+    const img = new Image();
+    // クイズ用（fileName）と確認モード用（file）の両方に対応
+    const src = item.fileName ? `skill/${item.fileName}` : `skill/${item.file}`;
+    img.src = src;
+  });
+}
+
 function initGame() {
   let allSkills = [];
   charData.forEach((char) => {
@@ -104,6 +118,8 @@ function initGame() {
     });
   });
   quizSet = allSkills.sort(() => Math.random() - 0.5).slice(0, TOTAL_QUESTIONS);
+
+  preloadQuizImages(quizSet);
   showQuestion();
 }
 
