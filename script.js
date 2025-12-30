@@ -21,7 +21,6 @@ const charIdColors = {
   13: '#69350b'
 };
 
-// デフォルトを 'sin' に設定
 let choiceMode = 'sin';
 
 function toggleChoiceMode() {
@@ -29,16 +28,15 @@ function toggleChoiceMode() {
   if (choiceMode === 'sin') {
     choiceMode = 'org';
     btn.innerText = '選択肢：所属優先';
-    btn.style.color = '#888';
   } else if (choiceMode === 'org') {
     choiceMode = 'all';
     btn.innerText = '選択肢：全ランダム';
-    btn.style.color = '#888';
   } else {
     choiceMode = 'sin';
-    btn.innerText = '選択肢：属性優先';
-    btn.style.color = '#888';
+    btn.innerText = '選択肢：罪悪属性優先';
   }
+  // 全モード共通の色
+  btn.style.color = '#888';
 }
 
 function setupOrgMenu() {
@@ -120,12 +118,14 @@ function preloadQuizImages(set) {
 function initGame() {
   let allSkills = [];
   charData.forEach((char) => {
-    char.skills.forEach((skill) => {
+    // スロット（S1, S2, S3）を判別するために index を取得
+    char.skills.forEach((skill, index) => {
       allSkills.push({
         charObj: char,
         skillName: skill.name,
         fileName: skill.file,
-        sin: skill.sin // sin情報を追加
+        sin: skill.sin,
+        skillSlot: index // 0:S1, 1:S2, 2:S3
       });
     });
   });
@@ -190,23 +190,32 @@ function showQuestion() {
 
 function generateChoices(currentQuestion) {
   const correctChar = currentQuestion.charObj;
-  const currentSin = currentQuestion.sin;
+  const targetSin = currentQuestion.sin;
+  const targetSlot = currentQuestion.skillSlot;
   const choicesArea = document.getElementById('choices-area');
   choicesArea.innerHTML = '';
 
   let wrongChoices = [];
 
   if (choiceMode === 'sin') {
-    // 属性優先：この問題のスキルと同じsin（色）をどこかに持っている他のキャラ
-    let sameSinChars = charData.filter(
-      (c) => c.name !== correctChar.name && c.skills.some((s) => s.sin === currentSin)
+    // 優先度1：同じスロット（S1/S2/S3）に同じ色を持っている人格
+    let tier1 = charData.filter(
+      (c) => c.name !== correctChar.name && c.skills[targetSlot] && c.skills[targetSlot].sin === targetSin
     );
-    let diffSinChars = charData.filter(
-      (c) => c.name !== correctChar.name && !c.skills.some((s) => s.sin === currentSin)
+
+    // 優先度2：スロットは違うが、どこかに同じ色を持っている人格
+    let tier2 = charData.filter(
+      (c) => c.name !== correctChar.name && !tier1.includes(c) && c.skills.some((s) => s.sin === targetSin)
     );
+
+    // 優先度3：それ以外（ランダム補填）
+    let tier3 = charData.filter((c) => c.name !== correctChar.name && !tier1.includes(c) && !tier2.includes(c));
+
+    // まとめて上位3つを取得
     wrongChoices = [
-      ...sameSinChars.sort(() => Math.random() - 0.5),
-      ...diffSinChars.sort(() => Math.random() - 0.5)
+      ...tier1.sort(() => Math.random() - 0.5),
+      ...tier2.sort(() => Math.random() - 0.5),
+      ...tier3.sort(() => Math.random() - 0.5)
     ].slice(0, 3);
   } else if (choiceMode === 'org') {
     // 所属優先
