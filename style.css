@@ -1,0 +1,361 @@
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  text-align: center;
+  background: #000000;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+#game-container {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #171717;
+  padding: 30px;
+  border-radius: 5px;
+  border: 1px solid #333;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 5px 12px !important;
+  font-size: 0.8em !important;
+  background: #2d2d2d !important;
+  color: #888 !important;
+  border: 1px solid #444 !important;
+  cursor: pointer;
+  z-index: 10;
+}
+
+h1 {
+  font-size: 1.6em;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #8b0000;
+  padding-bottom: 10px;
+}
+
+.difficulty-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.difficulty-menu button {
+  font-size: 1.1em;
+  font-weight: bold;
+  border: 1px solid #ffd700;
+  background: #171717;
+  color: #ffffff;
+  padding: 20px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.btn-easy:hover {
+  background: #2e4d2e;
+  box-shadow: 0 0 10px #4caf50;
+}
+.btn-normal:hover {
+  background: #1a3a5a;
+  box-shadow: 0 0 10px #2196f3;
+}
+.btn-hard:hover {
+  background: #8b0000;
+  box-shadow: 0 0 10px #f44336;
+}
+
+/* ==========================================
+   ▼▼▼ DEBUG: MODE TOGGLE / CHECK MODE (削除用) ▼▼▼
+   ========================================== */
+#debug-menu {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+#mode-toggle-btn,
+#check-mode-btn {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  color: #888;
+  font-size: 0.75em;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 2px;
+  min-width: 130px;
+}
+
+#mode-toggle-btn:hover,
+#check-mode-btn:hover {
+  border-color: #8b0000;
+  color: #ffd700;
+}
+
+/* 確認モード用レイアウト */
+.check-grid {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: nowrap;
+}
+
+.check-item {
+  flex: 1;
+  background: #000;
+  border: 1px solid #444;
+  padding: 10px;
+  max-width: 150px;
+}
+
+.check-item img {
+  width: 150px;
+  object-fit: contain;
+  margin-bottom: 5px;
+  border: 1px solid #ffd70055;
+}
+
+.check-skill-name {
+  font-size: 0.75em;
+  color: #ccc;
+  margin: 0;
+  line-height: 1.2;
+  height: 2.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-footer {
+  margin-top: 20px;
+  padding: 20px;
+  background: #222;
+  border-top: 2px solid #8b0000;
+}
+
+.answer-name {
+  font-size: 1.2em;
+  color: #ffd700;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.check-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-prev-check,
+.btn-next-check {
+  flex: 2;
+  padding: 15px;
+  background: linear-gradient(180deg, #4a0000 0%, #1a0000 100%);
+  color: #ffd700;
+  border: 1px solid #ffd700;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-prev-check:hover:not(:disabled),
+.btn-next-check:hover {
+  background: linear-gradient(180deg, #8b0000 0%, #300000 100%);
+}
+
+.btn-prev-check:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   ▲▲▲ DEBUG: MODE TOGGLE / CHECK MODE (削除用) ▲▲▲
+   ========================================== */
+
+#image-area {
+  width: 140px;
+  height: 140px;
+  margin: 20px auto;
+  border: 2px solid #f8e40a9d;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#skill-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.hard-effect {
+  filter: blur(2.5px) brightness(1.2);
+}
+#skill-name {
+  font-weight: bold;
+  color: #ffd700;
+  font-size: 1.3em;
+}
+
+#choices-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+#choices-area button {
+  min-height: 60px;
+  padding: 10px 10px 10px 30px;
+  cursor: pointer;
+  background: linear-gradient(to right, rgba(40, 0, 0, 0.9), rgba(20, 0, 0, 0.9));
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  font-weight: bold;
+  position: relative;
+  transition: all 0.4s ease-out;
+}
+
+#choices-area button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 100%;
+  background-color: var(--char-color, #8b0000);
+}
+
+.hidden {
+  display: none !important;
+}
+.invisible {
+  visibility: hidden;
+}
+
+/* 追加: クイズ中のふわーっと色づくアニメーション設定 */
+.correct-choice {
+  background: linear-gradient(to right, #1b5e20, #2e7d32) !important;
+  border-color: #4caf50 !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+  transform: scale(1.03);
+}
+
+.wrong-choice {
+  background: linear-gradient(to right, #b71c1c, #c62828) !important;
+  border-color: #f44336 !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+}
+
+.dimmed-choice {
+  opacity: 0.2;
+  filter: blur(1px);
+  transform: scale(0.95);
+}
+
+/* 2-2: 所属選択メニュー用 */
+#quiz-header {
+  position: relative; /* 子要素（ボタン）を右端に固定する基準にする */
+  margin-bottom: 15px;
+  min-height: 40px; /* ヘッダーの高さを確保 */
+  display: flex; /* Flexbox自体は使用 */
+  justify-content: center; /* 中の要素（テキスト）を中央寄せにする */
+  align-items: center;
+}
+
+#question-number {
+  margin: 0;
+  text-align: center; /* 文字自体もセンターへ */
+  font-weight: bold;
+}
+
+#org-jump-btn {
+  position: absolute; /* テキストの配置に影響を与えず、浮かせて配置 */
+  right: 15px; /* 右端に固定 */
+  transform: translateY(-50%); /* 垂直中央合わせ */
+  z-index: 5; /* 他の要素より上に */
+  background: #2d2d2d;
+  color: #ffd700;
+  border: 1px solid #ffd70055;
+  padding: 5px 12px;
+}
+
+#org-menu-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#org-menu-content {
+  background: #1a1a1a;
+  border: 2px solid #8b0000;
+  width: 80%;
+  max-height: 80%;
+  padding: 20px;
+  overflow-y: auto;
+}
+#org-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+#org-list button {
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 10px;
+  cursor: pointer;
+}
+.close-org-btn {
+  background: #444;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#review-area {
+  text-align: left;
+  margin: 20px 0;
+  padding: 10px;
+  background: #111;
+  max-height: 300px;
+  overflow-y: auto;
+  border-left: 4px solid #8b0000;
+}
+.review-card {
+  background: #1a1a1a;
+  margin-bottom: 8px;
+  padding: 10px;
+}
+
+/* --- フッターの注釈（目立たないように設定） --- */
+#footer-info {
+  margin: 20px auto 40px;
+  max-width: 500px;
+  font-size: 0.7em; /* かなり小さめ */
+  color: #808080; /* 暗いグレーで背景に馴染ませる */
+  line-height: 1.6;
+  text-align: center;
+}
+
+#footer-info p {
+  margin: 4px 0;
+}
