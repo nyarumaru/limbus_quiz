@@ -1,3 +1,4 @@
+
 let currentQuizIndex = 0;
 let score = 0;
 let quizSet = [];
@@ -16,9 +17,9 @@ const charIdColors = {
   '07': '#4e3076',
   '08': '#ff9500',
   '09': '#820000',
-  11: '#8b9c15',
-  12: '#325339',
-  13: '#69350b'
+  '11': '#8b9c15',
+  '12': '#325339',
+  '13': '#69350b'
 };
 
 let choiceMode = 'all';
@@ -103,10 +104,18 @@ function backToTitle() {
 
 function preloadQuizImages(set) {
   set.forEach((item) => {
-    const img = new Image();
-    // クイズ用（fileName）と確認モード用（file）の両方に対応
-    const src = item.fileName ? `skill/${item.fileName}` : `skill/${item.file}`;
-    img.src = src;
+    // クイズモードの場合 (item自体にfileNameがある)
+    if (item.fileName) {
+      const img = new Image();
+      img.src = `skill/${item.fileName}`;
+    }
+    // 確認モードの場合 (item.skillsの中に複数の画像がある)
+    else if (item.skills) {
+      item.skills.forEach((s) => {
+        const img = new Image();
+        img.src = `skill/${s.file}`;
+      });
+    }
   });
 }
 
