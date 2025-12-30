@@ -364,14 +364,18 @@ function checkTextAnswer() {
 
   checkAnswer(null, input, correctAnswer);
 }
+
 function checkAnswer(clickedBtn, selected, correct) {
   if (isProcessing) return;
   isProcessing = true;
   const isCorrect = selected === correct;
   if (isCorrect) score++;
 
+  // 現在の問題のデータを取得
+  const current = quizSet[currentQuizIndex];
+
   gameLog.push({
-    skill: currentDifficulty === 'veryhard' ? '画像から推測' : quizSet[currentQuizIndex].skillName,
+    skill: currentDifficulty === 'veryhard' ? current.charObj.name : current.skillName,
     correct: correct,
     selected: selected || '(未入力)',
     isCorrect: isCorrect
@@ -397,7 +401,6 @@ function checkAnswer(clickedBtn, selected, correct) {
 
   setTimeout(() => {
     currentQuizIndex++;
-
     if (currentQuizIndex < TOTAL_QUESTIONS) showQuestion();
     else showResult();
   }, 1200);
@@ -405,56 +408,42 @@ function checkAnswer(clickedBtn, selected, correct) {
 
 function showResult() {
   document.getElementById('quiz-screen').classList.add('hidden');
-
   document.getElementById('back-to-title-btn').classList.add('hidden');
-
   document.getElementById('result-screen').classList.remove('hidden');
 
   const diffSet = {
     easy: { label: 'Easy', color: '#4caf50' },
-
     normal: { label: 'Normal', color: '#ffb74d' },
-
     hard: { label: 'Hard', color: '#f44336' },
-
     veryhard: { label: 'Very Hard', color: '#ba68c8' }
   };
 
   const setting = diffSet[currentDifficulty] || { label: 'Unknown', color: '#fff' };
-
   document.getElementById('score-text').innerHTML = `
-
     <div style="margin-bottom:10px;">難易度: <span style="color:${setting.color}; font-weight:bold;">${setting.label}</span></div>
-
     <div>${TOTAL_QUESTIONS}問中 ${score}問正解！</div>`;
-
   const reviewArea = document.getElementById('review-area');
-
   reviewArea.innerHTML = '';
 
   gameLog.forEach((log, i) => {
     const card = document.createElement('div');
-
     card.className = 'review-card';
-
     card.style.borderLeft = log.isCorrect ? `5px solid #2e7d32` : `5px solid #c62828`;
 
-    card.innerHTML = `
+    const label = currentDifficulty === 'veryhard' ? '人格' : 'スキル';
 
-      <div style="font-size:0.9em; color:#ffd700; margin-bottom:5px;">${i + 1}. スキル：${log.skill} ${
+    card.innerHTML = `
+      <div style="font-size:0.9em; color:#ffd700; margin-bottom:5px;">${i + 1}. ${label}：${log.skill} ${
       log.isCorrect ? '○' : '×'
     }</div>
-
       <div style="font-size:0.85em; color:#888;">回答: <span style="color:${log.isCorrect ? '#81c784' : '#e57373'}">${
       log.selected
     }</span></div>
-
       ${
         !log.isCorrect
           ? `<div style="font-size:0.85em; color:#888;">正解: <span style="color:#81c784">${log.correct}</span></div>`
           : ''
       }`;
-
     reviewArea.appendChild(card);
   });
 }
